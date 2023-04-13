@@ -29,7 +29,6 @@
 
   
 <script setup>
-
     const movieName = ref('')
     const isPeliculasExpanded = ref(false)
     const isGenerosPeliculasExpanded = ref(false)
@@ -41,7 +40,12 @@
     function handleMouseGeneros() {
       isGenerosPeliculasExpanded.value = !isGenerosPeliculasExpanded.value;
     }
-  
+    function handleEnter(movieName) {
+      if (movieName.trim().length > 0) { //aca revisa que no haya algo vacio
+        const encodedMovieName = encodeURIComponent(movieName.trim());//aca convierte espacios en codigo para que no rompa la URL
+        navigateTo(`/search/${encodedMovieName}`);
+      }
+    }
 </script>
 
 
