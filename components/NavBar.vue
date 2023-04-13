@@ -4,7 +4,11 @@
       <img src="~/assets/logo.png" alt="logo" />
     </div>
 
-    <div id="options-container">
+    <div id="menu-icon" @click="showMenu = !showMenu">
+      <img src="~/assets/menu-button.png" alt="menu icon" />
+    </div>
+
+    <div id="options-container" :class="{ 'show': showMenu }">
       <nuxt-link to="/">Inicio</nuxt-link>
 
       <a @click="handleMousePeliculas()">Peliculas</a>
@@ -19,34 +23,47 @@
           </ul>
         </div>
       </div>
-    </div>
 
-    <div id="search-container">
-      <input type="text" placeholder="Movie Name" v-model="movieName" @keyup.enter="handleEnter(movieName)" />
+      <div id="search-container">
+        <input type="text" placeholder="Movie Name" v-model="movieName" @keyup.enter="handleEnter(movieName)" />
+      </div>
     </div>
   </nav>
 </template>
 
-  
 <script setup>
-    const movieName = ref('')
-    const isPeliculasExpanded = ref(false)
-    const isGenerosPeliculasExpanded = ref(false)
-    const {data: categories} = await useFetch("http://localhost:3001/moviegenders")
+  const movieName = ref('')
+  const isPeliculasExpanded = ref(false)
+  const isGenerosPeliculasExpanded = ref(false)
+  const { data: categories } = await useFetch('http://localhost:3001/moviegenders')
+  const showMenu = ref(false)
 
-    function handleMousePeliculas() {
-      isPeliculasExpanded.value = !isPeliculasExpanded.value;
+  function handleMousePeliculas() {
+    isPeliculasExpanded.value = !isPeliculasExpanded.value
+  }
+
+  function handleMouseGeneros() {
+    isGenerosPeliculasExpanded.value = !isGenerosPeliculasExpanded.value
+  }
+
+  function handleEnter(movieName) {
+    if (movieName.trim().length > 0) {
+      const encodedMovieName = encodeURIComponent(movieName.trim())
+      navigateTo(`/search/${encodedMovieName}`)
     }
-    function handleMouseGeneros() {
-      isGenerosPeliculasExpanded.value = !isGenerosPeliculasExpanded.value;
-    }
-    function handleEnter(movieName) {
-      if (movieName.trim().length > 0) { //aca revisa que no haya algo vacio
-        const encodedMovieName = encodeURIComponent(movieName.trim());//aca convierte espacios en codigo para que no rompa la URL
-        navigateTo(`/search/${encodedMovieName}`);
-      }
-    }
+  }
+
+  // Hide the menu when a link is clicked
+  watchEffect(() => {
+    const links = document.querySelectorAll('#options-container a')
+    links.forEach(link => {
+      link.addEventListener('click', () => {
+        showMenu.value = false
+      })
+    })
+  })
 </script>
+
 
 
 <style scoped>
@@ -124,13 +141,11 @@
   position: absolute;
   left: 0;
   top: 100%;
-  /* display: none; */
   background-color: #6d6c6c;
   min-width: 150px;
   max-height: 2000px;
   left: 25px;
   overflow-y: scroll;
-  
   scrollbar-width: thin;
   scrollbar-color: #8e8e8e #d6d6d6;
 }
@@ -157,16 +172,96 @@
   background-color: #333;
 }
 
-#firstcont{
+#firstcont {
   display: flex;
 }
 
-.justtext{
+.justtext {
   padding: 10px;
   margin: 0px;
 }
+
 nav #options-container a:hover, nav .justtext:hover {
   background-color: #333;
 }
 
+@media screen and (max-width: 767px) {
+  .header {
+    padding: 20px;
+  }
+
+  .navbar {
+    display: none;
+  }
+
+  .navbar-icon {
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .content {
+    width: 100%;
+  }
+}
+
+/* Styles for medium screens */
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .header {
+    padding: 30px;
+  }
+
+  .navbar {
+    display: block;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .navbar-icon {
+    display: none;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .content {
+    width: 100%;
+  }
+}
+
+/* Styles for large screens */
+@media screen and (min-width: 992px) {
+  .header {
+    padding: 40px;
+  }
+
+  .navbar {
+    display: block;
+    width: 25%;
+    float: left;
+    margin-right: 20px;
+  }
+
+  .navbar-icon {
+    display: none;
+  }
+
+  .sidebar {
+    display: block;
+    width: 25%;
+    float: right;
+    margin-left: 20px;
+  }
+
+  .content {
+    width: 50%;
+    float: left;
+  }
+}
 </style>
