@@ -55,4 +55,8 @@ export default {
   a {
     text-align: center;
   }
+  .image-container {
+    width: 18%;
+    text-align: center;
+}
   </style>
