@@ -1,69 +1,65 @@
 <template>
   <nav id="container-nav">
     <div id="logo-container">
-      <img src="~/assets/logo.png" alt="logo" />
+      <nuxt-link to="/">
+        <img src="~/assets/logo.png" alt="logo" />
+      </nuxt-link>
     </div>
-
-    <div id="menu-icon" @click="showMenu = !showMenu">
-      <img src="~/assets/menu-button.png" alt="menu icon" />
-    </div>
-
-    <div id="options-container" :class="{ 'show': showMenu }">
-      <nuxt-link to="/">Inicio</nuxt-link>
-
-      <a @click="handleMousePeliculas()">Peliculas</a>
-      <div v-if="isPeliculasExpanded" class="categorias-container">
-        <nuxt-link to="/estrenos">Estrenos</nuxt-link>
-        <a @click="handleMouseGeneros()">Generos</a>
-        <div id="secondcont" v-if="isGenerosPeliculasExpanded" >
-          <ul class="generos">
-            <li v-for="category in categories" :key="category.name" class="opciones">
-              <nuxt-link :to="'/categorias/' + category.name" @click="handleMousePeliculas(); handleMouseGeneros();">{{ category.name }}</nuxt-link>
-            </li>
-          </ul>
+    <div class="navbar-collapse" :class="{ 'show': isMenuOpen }">
+      <div class="navbar-nav">
+        <div class="column">
+          <div id="options-container">
+            <nuxt-link to="/">Inicio</nuxt-link>
+            <a @click="handleMousePeliculas" class="main-item">Peliculas</a>
+            <div v-if="isPeliculasExpanded" class="categorias-container">
+              <p><nuxt-link to="/estrenos" class="justtext">Estrenos</nuxt-link></p>
+              <a @click="handleMouseGeneros" class="justtext">Generos</a>
+              <div id="secondcont" v-if="isGenerosPeliculasExpanded" >
+                <ul class="generos">
+                  <li v-for="category in categories" :key="category.id" class="opciones">
+                    <nuxt-link :to="'/categorias/' + category.name" class="opcion">{{ category.name }}</nuxt-link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div id="search-container">
+            <input type="text" placeholder="Movie Name" v-model="movieName" @keyup.enter="handleEnter(movieName)" />
+          </div>
         </div>
       </div>
-
-      <div id="search-container">
-        <input type="text" placeholder="Movie Name" v-model="movieName" @keyup.enter="handleEnter(movieName)" />
-      </div>
     </div>
+    <button class="navbar-toggler d-lg-none" type="button" @click="toggleMenu()">
+      <img src="~/assets/menu-button.png" alt="Toggle menu icon">
+    </button>
   </nav>
 </template>
 
+
+  
 <script setup>
-  const movieName = ref('')
-  const isPeliculasExpanded = ref(false)
-  const isGenerosPeliculasExpanded = ref(false)
-  const { data: categories } = await useFetch('http://localhost:3001/moviegenders')
-  const showMenu = ref(false)
+    const movieName = ref('')
+    const isPeliculasExpanded = ref(false)
+    const isGenerosPeliculasExpanded = ref(false)
+    const isMenuOpen = ref(false)
+    const {data: categories} = await useFetch("http://localhost:3001/moviegenders")
 
-  function handleMousePeliculas() {
-    isPeliculasExpanded.value = !isPeliculasExpanded.value
-  }
-
-  function handleMouseGeneros() {
-    isGenerosPeliculasExpanded.value = !isGenerosPeliculasExpanded.value
-  }
-
-  function handleEnter(movieName) {
-    if (movieName.trim().length > 0) {
-      const encodedMovieName = encodeURIComponent(movieName.trim())
-      navigateTo(`/search/${encodedMovieName}`)
+    function toggleMenu() {
+      isMenuOpen.value = !isMenuOpen.value;
     }
-  }
-
-  // Hide the menu when a link is clicked
-  watchEffect(() => {
-    const links = document.querySelectorAll('#options-container a')
-    links.forEach(link => {
-      link.addEventListener('click', () => {
-        showMenu.value = false
-      })
-    })
-  })
+    function handleMousePeliculas() {
+      isPeliculasExpanded.value = !isPeliculasExpanded.value;
+    }
+    function handleMouseGeneros() {
+      isGenerosPeliculasExpanded.value = !isGenerosPeliculasExpanded.value;
+    }
+    function handleEnter(movieName) {
+      if (movieName.trim().length > 0) { //aca revisa que no haya algo vacio
+        const encodedMovieName = encodeURIComponent(movieName.trim());//aca convierte espacios en codigo para que no rompa la URL
+        navigateTo(`/search/${encodedMovieName}`);
+      }
+    }
 </script>
-
 
 
 <style scoped>
@@ -73,6 +69,7 @@
   left: 0;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
   z-index: 999;
   background-color: #333;
@@ -130,9 +127,7 @@
   left: 100px;
 }
 
-.categoria-container {
-  padding: 10px;
-}
+
 
 .generos {
   list-style: none;
@@ -172,96 +167,121 @@
   background-color: #333;
 }
 
-#firstcont {
+#firstcont{
   display: flex;
 }
 
-.justtext {
+.justtext{
   padding: 10px;
   margin: 0px;
 }
-
+.opcion{
+  padding: 0px 100% 0px 0px!important;
+}
 nav #options-container a:hover, nav .justtext:hover {
   background-color: #333;
 }
-
-@media screen and (max-width: 767px) {
-  .header {
-    padding: 20px;
-  }
-
-  .navbar {
-    display: none;
-  }
-
-  .navbar-icon {
-    display: block;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-  }
-
-  .sidebar {
-    display: none;
-  }
-
-  .content {
-    width: 100%;
-  }
+.container-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px;
+}
+.navbar-collapse  {
+  display: flex;
+  width: 100%;
 }
 
-/* Styles for medium screens */
-@media screen and (min-width: 768px) and (max-width: 991px) {
-  .header {
-    padding: 30px;
-  }
-
-  .navbar {
-    display: block;
-    width: 100%;
-    margin-bottom: 20px;
-  }
-
-  .navbar-icon {
-    display: none;
-  }
-
-  .sidebar {
-    display: none;
-  }
-
-  .content {
-    width: 100%;
-  }
+.navbar-toggler {
+  display: none;
+  border: none;
+  background-color: transparent;
 }
-
-/* Styles for large screens */
-@media screen and (min-width: 992px) {
-  .header {
-    padding: 40px;
-  }
-
-  .navbar {
-    display: block;
-    width: 25%;
-    float: left;
-    margin-right: 20px;
-  }
-
-  .navbar-icon {
-    display: none;
-  }
-
-  .sidebar {
-    display: block;
-    width: 25%;
-    float: right;
-    margin-left: 20px;
-  }
-
-  .content {
-    width: 50%;
-    float: left;
-  }
+.navbar-nav {
+  display: flex;
+  width: inherit;
+  height: inherit;
 }
+.column{
+  display: flex;
+  width: inherit;
+  height: inherit;
+  }
+@media only screen and (max-width: 768px) and (max-height: 1350px) {
+  .navbar-toggler {
+    display: block;
+  }
+
+  .navbar-toggler img {
+    display: block;
+    width: 30px;
+    height: 30px;
+  }
+
+  .navbar-nav {
+  display: none;
+  background-color: #333;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: max-content;
+  height: 100vh;
+  }
+
+  .column{
+  display: flex;
+  flex-direction: column-reverse;
+  width: max-content;
+  justify-content: flex-end;
+  }
+
+  .show .navbar-nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #search-container input[type="text"] {
+    width: 200px;
+    padding: 6px;
+    margin: 10px 20px;
+  }
+
+  #options-container {
+    align-items: flex-start;
+    flex-direction: column;
+    width: 70%;
+    margin-left: 10%;
+  }
+  #secondcont .generos {
+    width: 200px;
+    height: 200px;
+  }
+  .main-item {
+    border-bottom: 1px solid white !important;
+    width: 100%;
+  }
+
+  .categorias-container {
+    display: flex;
+    background-color:inherit;
+    left: 0px;
+  }
+  .justtext {
+    font-size: 0.9rem;
+    color: #ababab !important
+  }
+  .generos {
+    background-color: inherit;
+    left: 8%;
+  }
+  .opcion {
+    font-size: 0.8rem;
+    color: #ababab !important;
+  }
+} 
+
+
 </style>
