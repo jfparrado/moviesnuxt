@@ -24,7 +24,7 @@
             </div>
           </div>
           <div id="search-container">
-            <input type="text" placeholder="Movie Name" v-model="movieName" @keyup.enter="handleEnter(movieName)" />
+            <input type="text" placeholder="Movie Name" v-model="movieName" @keyup.enter="handleEnter($event)" />
           </div>
         </div>
       </div>
@@ -35,31 +35,34 @@
   </nav>
 </template>
 
-
-  
 <script setup>
-    const movieName = ref('')
-    const isPeliculasExpanded = ref(false)
-    const isGenerosPeliculasExpanded = ref(false)
-    const isMenuOpen = ref(false)
-    const {data: categories} = await useFetch("http://localhost:3001/moviegenders")
+import DOMPurify from 'dompurify';
 
-    function toggleMenu() {
-      isMenuOpen.value = !isMenuOpen.value;
-    }
-    function handleMousePeliculas() {
-      isPeliculasExpanded.value = !isPeliculasExpanded.value;
-    }
-    function handleMouseGeneros() {
-      isGenerosPeliculasExpanded.value = !isGenerosPeliculasExpanded.value;
-    }
-    function handleEnter(movieName) {
-      if (movieName.trim().length > 0) { //aca revisa que no haya algo vacio
-        const encodedMovieName = encodeURIComponent(movieName.trim());//aca convierte espacios en codigo para que no rompa la URL
-        navigateTo(`/search/${encodedMovieName}`);
-      }
-    }
+const movieName = ref('')
+const isPeliculasExpanded = ref(false)
+const isGenerosPeliculasExpanded = ref(false)
+const isMenuOpen = ref(false)
+const {data: categories} = await useFetch("http://localhost:3001/moviegenders")
+
+function toggleMenu() {
+  isMenuOpen.value = !isMenuOpen.value;
+}
+function handleMousePeliculas() {
+  isPeliculasExpanded.value = !isPeliculasExpanded.value;
+}
+function handleMouseGeneros() {
+  isGenerosPeliculasExpanded.value = !isGenerosPeliculasExpanded.value;
+}
+function handleEnter(event) {
+  const input = event.target;
+  const movieName = DOMPurify.sanitize(input.value.trim()); // use DOMPurify to sanitize the input value
+  if (movieName.length > 0) {
+    const encodedMovieName = encodeURIComponent(movieName);
+    navigateTo(`/search/${encodedMovieName}`);
+  }
+}
 </script>
+
 
 
 <style scoped>
