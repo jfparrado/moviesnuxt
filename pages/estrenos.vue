@@ -5,8 +5,12 @@
 </template>
 
 <script setup lang="ts">
+ definePageMeta({
+    middleware:['auth']
+  })
+  import { getLatestMoviesPreview } from '../plugins/api/movies'; 
     const titulo="Estrenos";
-    const {data: movies} = await useFetch("http://localhost:3001/latestmovies")
+    const movies= await getLatestMoviesPreview()
 </script>
 
 <style scoped>

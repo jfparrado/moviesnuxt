@@ -5,7 +5,9 @@
   </template>
   
   <script setup>
-  
+  definePageMeta({
+    middleware:['auth']
+  })
   const { gender } = useRoute().params;
   const url = "http://localhost:3001/moviesbygender/" + gender;
   const titulo = gender;

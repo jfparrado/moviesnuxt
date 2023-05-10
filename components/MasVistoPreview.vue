@@ -5,8 +5,9 @@
 </template>
 
 <script setup>
+import { getTopranked } from '../plugins/api/movies'; 
     const titulo="Mas Visto";
-    const {data: movies} = await useFetch("http://localhost:3001/topranked")
+    const movies= await getTopranked()
 </script>
 
 <style scoped>

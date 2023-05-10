@@ -27,6 +27,9 @@
             <input type="text" placeholder="Movie Name" v-model="movieName" @keyup.enter="handleEnter($event)" />
           </div>
         </div>
+        <button v-if="isUserLoggedIn" class="navbar-logout" type="button" @click="onLogOut">
+          <img src="~/assets/exit.png" alt="logout icon">
+        </button>
       </div>
     </div>
     <button class="navbar-toggler d-lg-none" type="button" @click="toggleMenu()">
@@ -42,8 +45,23 @@ const movieName = ref('')
 const isPeliculasExpanded = ref(false)
 const isGenerosPeliculasExpanded = ref(false)
 const isMenuOpen = ref(false)
+const isUserLoggedIn = true
 const {data: categories} = await useFetch("http://localhost:3001/moviegenders")
+const client = useSupabaseClient()
 
+const user = useSupabaseUser()
+const onLogOut= async () =>{
+  try {
+    const {data,error}= await client.auth.signOut()
+  // console.log("user:",user.value);
+  // console.log("data:",data);
+  // console.log("error:",error);
+  // console.log("logout");
+  } catch (error) {
+    console.log(error);
+  }
+
+}
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value;
 }
@@ -210,6 +228,15 @@ nav #options-container a:hover, nav .justtext:hover {
   display: flex;
   width: inherit;
   height: inherit;
+  }
+    .navbar-logout img {
+    width: 30px;
+    height: 30px;
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(257deg) brightness(100%) contrast(105%);
+  }
+  .navbar-logout {
+    background-color: transparent;
+    border: none;
   }
 @media only screen and (max-width: 768px) and (max-height: 1350px) {
   .navbar-toggler {

@@ -15,9 +15,9 @@
           </template>
         </section>
       </template>
-      <slot name="loading"><img src="~/assets/loading.gif" alt="loading" /></slot>
     </template>
     <template v-else>
+      <slot name="loading"><img src="~/assets/loading.gif" alt="loading" /></slot>
       <slot name="no-results"><p id="noResults">No se encontraron resultados</p></slot>
     </template>
   </div>
